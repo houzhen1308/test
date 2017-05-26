@@ -1,4 +1,4 @@
-package com.hz.test;
+package com;
 
 public class Test {
 
