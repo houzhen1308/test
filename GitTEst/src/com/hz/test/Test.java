@@ -10,6 +10,7 @@ public class Test {
 		System.out.println("hello git");
 		System.out.println("hai");
 		System.out.println("san");
+		System.out.println("soi");
 	}
 
 }
