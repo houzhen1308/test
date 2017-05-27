@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dounion.lk.entity.sys.SysDemo">
+	<resultMap id="sysDemo" type="com.dounion.lk.entity.sys.SysDemo">    
+		<id property="id" column="ID" jdbcType="INTEGER" />
+		<result property="name" column="NAME" jdbcType="VARCHAR"/>
+		<result property="sex" column="SEX" jdbcType="VARCHAR"/>
+		<result property="birthday" column="BIRTHDAY" jdbcType="VARCHAR"/>
+	</resultMap>
+    	
+	<!-- 查询条件 -->
+	<sql id="dynamicWhere">
+		<where>
+			IFNULL(IS_DELETED,0) = 0
+			<if test="@Ognl@isNotEmpty(id)"> AND ID =#{id} </if>
+			<if test="@Ognl@isNotEmpty(name)"> AND NAME like '%${name}%' </if>
+		</where>
+	</sql>
+	
+	<!-- 根据id查询 -->
+	<select id="findById" resultMap="sysDemo" parameterType="java.lang.Integer">
+		SELECT * FROM T_SYS_DEMO WHERE ID=#{value}
+	</select>
+	
+	<!-- 根据列表 -->
+	<select id="findByEntity" resultMap="sysDemo" parameterType="map">
+		SELECT * 
+		FROM T_SYS_DEMO 
+		<include refid="dynamicWhere" />
+		<if test="@Ognl@isNotEmpty(orderField)">
+			ORDER BY ${orderField} ${ascOrDesc}
+		</if>
+		<if test="@Ognl@isEmpty(orderField)">
+			ORDER BY ID DESC
+		</if>
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="add" parameterType="com.dounion.lk.entity.sys.SysDemo" useGeneratedKeys="true" keyProperty="id">
+		<![CDATA[ 
+		INSERT INTO T_SYS_DEMO (NAME, SEX, BIRTHDAY, IS_DELETED, CREATE_BY, CREATE_TIME) 
+		VALUES(
+		   	 #{name,jdbcType=VARCHAR} 
+		   	, #{sex,jdbcType=VARCHAR} 
+		   	, #{birthday,jdbcType=VARCHAR} 
+		   	, #{isDeleted,jdbcType=INTEGER} 
+		   	, #{createBy,jdbcType=VARCHAR} 
+		   	, #{createTime,jdbcType=VARCHAR})
+		]]>
+	</insert>
+	
+	<!-- 修改 -->
+	<update id="update" parameterType="com.dounion.lk.entity.sys.SysDemo">
+		UPDATE T_SYS_DEMO
+		<set>
+		   	NAME = #{name,jdbcType=VARCHAR}
+		   	, SEX = #{sex,jdbcType=VARCHAR}
+		   	, BIRTHDAY = #{birthday,jdbcType=VARCHAR}
+		   	, IS_DELETED = #{isDeleted,jdbcType=INTEGER}
+		   	, UPDATE_BY = #{updateBy,jdbcType=VARCHAR}
+		   	, UPDATE_TIME = #{updateTime,jdbcType=VARCHAR}
+		</set>
+		WHERE ID=#{id}
+	</update>
+	
+	<!-- 逻辑删除-->
+	<update id="delById" parameterType="map">
+		UPDATE T_SYS_DEMO
+		<set>
+			IS_DELETED = 1,
+			UPDATE_BY = #{updateBy,jdbcType=VARCHAR},
+			UPDATE_TIME = #{updateTime,jdbcType=VARCHAR}
+		</set>
+		WHERE ID=#{id}
+	</update>
+	
+	<!-- 删除-->
+	<delete id="killById" parameterType="java.lang.Integer">
+		DELETE FROM T_SYS_DEMO WHERE ID=#{value}
+	</delete>
+</mapper>
